@@ -176,11 +176,17 @@ uploadArchives {
 
 project.version = scmVersion.uncachedVersion.decoratedVersion
 
+task fixReleaseVersion(type: Task) {
+    doLast {
+        version = scmVersion.uncachedVersion.decoratedVersion
+    }
+}
+
 task release(type: Task, overwrite: true) {}
 
 //--- build aliases : define a synonym here if you want a shortcut to run multiple targets
 def buildAliases = [
-        'release': ['clean', 'createRelease', 'build', 'pushRelease'],
+        'release': ['clean', 'createRelease', 'fixReleaseVersion', 'build', 'pushRelease'],
 ]
 def expandedTaskList = []
 
