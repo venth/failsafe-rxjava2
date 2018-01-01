@@ -80,7 +80,7 @@ dependencies {
     )
 }
 
-build.doFirst { project.version = scmVersion.uncachedVersion }
+build.doFirst { project.version = scmVersion.uncachedVersion.decoratedVersion }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -111,6 +111,22 @@ sourceSets {
         output.resourcesDir = groovy.outputDir
     }
 }
+
+
+task release(type: Task, overwrite: true) {}
+
+//--- build aliases : define a synonym here if you want a shortcut to run multiple targets
+def buildAliases = [
+        'release': ['clean', 'createRelease', 'build', 'pushRelease'],
+]
+def expandedTaskList = []
+
+gradle.startParameter.taskNames.each {
+    expandedTaskList << (buildAliases[it] ? buildAliases[it] : it)
+}
+
+gradle.startParameter.taskNames = expandedTaskList.flatten()
+
 
 idea {
     module {
