@@ -174,7 +174,7 @@ uploadArchives {
     }
 }
 
-
+project.version = scmVersion.uncachedVersion.decoratedVersion
 
 task release(type: Task, overwrite: true) {}
 
@@ -189,7 +189,6 @@ gradle.startParameter.taskNames.each {
 }
 
 gradle.startParameter.taskNames = expandedTaskList.flatten()
-
 
 idea {
     module {
