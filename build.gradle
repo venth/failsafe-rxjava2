@@ -1,0 +1,125 @@
+ext {
+    ver = [
+            failSafe                : '[1.0.4, 1.1.0)',
+            rxJava                  : "[2.1.4, 2.2.0)",
+
+            spring                  : '[5.0.2.RELEASE,5.1.0.RELEASE)',
+            groovy                  : '[2.4.13, 2.5)',
+            spock                   : '[1.1-groovy-2.4, 2.0-groovy-2.4)',
+            cglib                   : '[3.2.5, 3.3.0)',
+            objenesis               : '[2.6, 3.0)',
+            jaxbApi                 : '[2.3.0, 2.4.0)',
+    ]
+}
+
+
+buildscript {
+    ext {
+        ver = [
+                axionRelease                : '[1.8.1,1.9.0)',
+        ]
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath(
+                "pl.allegro.tech.build:axion-release-plugin:${ver.axionRelease}",
+        )
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'pl.allegro.tech.build.axion-release'
+
+group = 'com.github.venth.failsafe'
+
+scmVersion {
+    ignoreUncommittedChanges = false
+    tag {
+        prefix = 'v'
+        versionSeparator = ''
+    }
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile(
+            // circuit breaker and repeater on failures
+            "net.jodah:failsafe:${ver.failSafe}",
+
+            // reactive
+            "io.reactivex.rxjava2:rxjava:${ver.rxJava}",
+    )
+
+    testCompile(
+            // mandatory dependencies for using Spock
+            "org.springframework:spring-test:${ver.spring}",
+            "org.codehaus.groovy:groovy-all:${ver.groovy}",
+            "org.spockframework:spock-core:${ver.spock}",
+            "org.spockframework:spock-spring:${ver.spock}",
+
+            // optional dependencies for using Spock
+            // allows mocking of classes (in addition to interfaces)
+            "cglib:cglib-nodep:${ver.cglib}",
+            // allows mocking of classes without default constructor (together with CGLIB)
+            "org.objenesis:objenesis:${ver.objenesis}",
+    )
+}
+
+build.doFirst { project.version = scmVersion.uncachedVersion }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+compileJava {
+    options.fork = true
+    options.incremental = true
+    options.compilerArgs << '-parameters'
+
+    dependsOn processResources
+}
+
+wrapper {
+    gradleVersion = '4.4.1'
+}
+
+sourceSets {
+    main {
+        output.resourcesDir = java.outputDir
+    }
+    test {
+        output.resourcesDir = groovy.outputDir
+    }
+}
+
+idea {
+    module {
+        // love reading sources :)
+        downloadSources = true
+
+        // convince intellij to used build as output directory for a module
+        outputDir compileJava.destinationDir
+        testOutputDir compileTestGroovy.destinationDir
+        inheritOutputDirs = false
+    }
+}
