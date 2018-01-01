@@ -1,5 +1,5 @@
 # Circuit Breaker Operator for RxJava2 (ReactiveX)
-[![Travis build](https://api.travis-ci.org/venth/failsafe-rxjava2.svg?branch=master)](https://api.travis-ci.org/venth/failsafe-rxjava2.svg?branch=master)
+[![Build Status](https://travis-ci.org/venth/failsafe-rxjava2.svg?branch=master)](https://travis-ci.org/venth/failsafe-rxjava2)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.venth.failsafe/failsafe-rxjava2.svg?style=plastic)]()
 Since introduction of [Spring Reactive](https://docs.spring.io/spring/docs/5.0.x/spring-framework-reference/web-reactive.html#spring-webflux)
 appeared a need of a circuit breaker that would follow the reactive principles and is very light. 
